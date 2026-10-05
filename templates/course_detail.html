@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} — EduSphere{% endblock %}
+{% block content %}
+<a href="{{ url_for('main.dashboard') }}" class="back-link">&larr; Back to dashboard</a>
+<h1>{{ course.title }}</h1>
+<p class="muted">by {{ course.instructor_name }}</p>
+<p>{{ course.description }}</p>
+
+{% if user.role == 'student' and not enrolled %}
+    <button class="btn btn-primary enroll-btn" data-course-id="{{ course.id }}">Enroll in this course</button>
+    <p class="muted">Enroll to unlock the lessons below.</p>
+{% endif %}
+
+{% if can_manage %}
+<section>
+    <h2>Add a lesson</h2>
+    <form id="create-lesson-form" class="inline-form" data-course-id="{{ course.id }}">
+        <input type="text" name="title" placeholder="Lesson title" required>
+        <input type="number" name="order_index" placeholder="Order" value="{{ lessons|length + 1 }}" min="0">
+        <input type="text" name="content" placeholder="Lesson content / notes">
+        <button type="submit" class="btn btn-primary">Add lesson</button>
+    </form>
+</section>
+{% endif %}
+
+<section>
+    <h2>Lessons</h2>
+    {% if user.role == 'student' and not enrolled %}
+        <p class="muted">Enroll to see lesson content.</p>
+    {% else %}
+        <ol class="lesson-list">
+        {% for lesson in lessons %}
+            <li data-lesson-id="{{ lesson.id }}">
+                <strong>{{ lesson.title }}</strong>
+                <p>{{ lesson.content }}</p>
+                {% if can_manage %}
+                    <button class="btn btn-ghost delete-lesson-btn" data-lesson-id="{{ lesson.id }}">Delete</button>
+                {% endif %}
+            </li>
+        {% else %}
+            <p class="muted">No lessons published yet.</p>
+        {% endfor %}
+        </ol>
+    {% endif %}
+</section>
+
+{% if user.role == 'student' and enrolled %}
+<section>
+    <h2>My progress</h2>
+    <input type="range" id="progress-slider" min="0" max="100" value="0" data-course-id="{{ course.id }}">
+    <span id="progress-value">0%</span>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.API_TOKEN = {{ api_token | tojson }};</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

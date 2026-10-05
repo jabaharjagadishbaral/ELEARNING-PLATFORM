@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Manage Users — EduSphere{% endblock %}
+{% block content %}
+<h1>Manage users</h1>
+
+<table class="data-table">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Change role</th></tr></thead>
+    <tbody>
+    {% for u in users %}
+        <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td><span class="pill pill-{{ u.role }}">{{ u.role }}</span></td>
+            <td>
+                <select class="role-select" data-user-id="{{ u.id }}" {% if u.id == user.id %}disabled{% endif %}>
+                    <option value="student" {% if u.role == 'student' %}selected{% endif %}>student</option>
+                    <option value="instructor" {% if u.role == 'instructor' %}selected{% endif %}>instructor</option>
+                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>admin</option>
+                </select>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>window.API_TOKEN = {{ api_token | tojson }};</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

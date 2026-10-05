@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My Courses — EduSphere{% endblock %}
+{% block content %}
+<h1>Welcome, {{ user.name }} 👋</h1>
+
+<section>
+    <h2>Create a new course</h2>
+    <form id="create-course-form" class="inline-form">
+        <input type="text" name="title" placeholder="Course title" required>
+        <input type="text" name="description" placeholder="Short description">
+        <button type="submit" class="btn btn-primary">Create course</button>
+    </form>
+    <p id="create-course-msg" class="muted"></p>
+</section>
+
+<section>
+    <h2>My courses</h2>
+    <div class="card-grid">
+        {% for c in courses %}
+        <div class="card">
+            <h3>{{ c.title }}</h3>
+            <p>{{ c.description or "No description yet." }}</p>
+            <a href="{{ url_for('main.course_detail', course_id=c.id) }}" class="btn btn-secondary">Manage lessons</a>
+        </div>
+        {% else %}
+        <p class="muted">You haven't created any courses yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>window.API_TOKEN = {{ api_token | tojson }};</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
